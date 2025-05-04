@@ -4,11 +4,14 @@ if status is-interactive
     starship init fish | source
 end
 
+eval "$(vivid generate dracula | sed 's/^/export LS_COLORS="/;s/$/"/')"
+
 # List Directory
-alias l='eza -lh  --icons=auto' # long list
-alias ls='eza -1   --icons=auto' # short list
+alias l='eza -lh --icons=auto --sort=name --group-directories-first' # long list
+alias ls='eza --icons=auto' # short list
 alias ll='eza -lha --icons=auto --sort=name --group-directories-first' # long list all
-alias lt='eza --icons=auto --tree' # list folder as tree
+alias lt='eza -lhaT --icons=auto' # list folder as tree
+alias cat='bat --theme=Dracula --paging=never'
 
 # Handy change dir shortcuts
 abbr .. 'cd ..'
