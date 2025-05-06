@@ -136,3 +136,5 @@ alias cat='bat --theme=Dracula --paging=never'
 eval "$(zoxide init bash)"
 
 alias c='z'
+
+eval "$(thefuck --alias)"
