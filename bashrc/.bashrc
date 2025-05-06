@@ -129,7 +129,7 @@ alias ls='eza --icons=auto'
 alias l='eza -lh --icons=auto --sort=name --group-directories-first'
 alias ll='eza -lha --icons=auto --sort=name --group-directories-first'
 alias lt='eza -lhaT --icons=auto'
-alias cat='bat --theme=Dracula --paging=never'
+alias cat='batcat --theme=Dracula --paging=never'
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
@@ -140,3 +140,4 @@ alias c='z'
 eval "$(thefuck --alias)"
 
 figurine -f "3d.flf" "$(hostname)"
+echo ""
