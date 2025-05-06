@@ -26,3 +26,5 @@ abbr mkdir 'mkdir -p'
 
 alias pacup='sudo pacman -Syyu'
 alias yayup='yay -Syyu'
+
+figurine -f 3d.flf "$(hostname)"
