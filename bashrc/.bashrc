@@ -137,6 +137,8 @@ eval "$(zoxide init bash)"
 
 alias c='z'
 
+alias y='yazi'
+
 eval "$(thefuck --alias)"
 
 figurine -f "3d.flf" "$(hostname)"
