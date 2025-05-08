@@ -8,11 +8,10 @@ end
 eval "$(vivid generate dracula | sed 's/^/export LS_COLORS="/;s/$/"/')"
 
 # List Directory
-alias l='eza -lh --icons=auto --sort=name --group-directories-first' # long list
-alias ls='eza --icons=auto' # short list
-alias ll='eza -lha --icons=auto --sort=name --group-directories-first' # long list all
-alias lt='eza -lhaT --icons=auto' # list folder as tree
-alias cat='bat --theme=Dracula --paging=never'
+# alias l='eza -lh --icons=auto --sort=name --group-directories-first' # long list
+# alias ls='eza --icons=auto' # short list
+# alias ll='eza -lha --icons=auto --sort=name --group-directories-first' # long list all
+# alias lt='eza -lhaT --icons=auto' # list folder as tree
 
 # Handy change dir shortcuts
 abbr .. 'cd ..'
@@ -26,6 +25,5 @@ abbr mkdir 'mkdir -p'
 
 alias pacup='sudo pacman -Syyu'
 alias yayup='yay -Syyu'
-
 
 thefuck --alias | source
