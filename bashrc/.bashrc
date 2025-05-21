@@ -141,5 +141,3 @@ alias y='yazi'
 
 eval "$(thefuck --alias)"
 
-figurine -f "3d.flf" "$(hostname)"
-echo ""
