@@ -125,9 +125,9 @@ export PULSE_LATENCY_MSEC=60
 
 eval "$(vivid generate dracula | sed 's/^/export LS_COLORS="/;s/$/"/')"
 
-alias ls='eza --icons=auto'
-alias l='eza -lh --icons=auto --sort=name --group-directories-first'
-alias ll='eza -lha --icons=auto --sort=name --group-directories-first'
+alias ls='eza --icons=auto --git'
+alias l='eza -lh --icons=auto --sort=name --group-directories-first --git'
+alias ll='eza -lha --icons=auto --sort=name --group-directories-first --git'
 alias lt='eza -lhaT --icons=auto'
 alias cat='batcat --theme=Dracula --paging=never'
 
