@@ -142,3 +142,5 @@ alias y='yazi'
 eval "$(thefuck --alias)"
 
 alias fzf="fzf --preview 'batcat --theme=Dracula --paging=never --color=always {}'"
+
+source /usr/share/doc/fzf/examples/key-bindings.bash
