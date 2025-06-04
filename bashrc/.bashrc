@@ -129,7 +129,7 @@ alias ls='eza --icons=auto --git'
 alias l='eza -lh --icons=auto --sort=name --group-directories-first --git'
 alias ll='eza -lha --icons=auto --sort=name --group-directories-first --git'
 alias lt='eza -lhaT --icons=auto'
-alias cat='batcat --theme=Dracula --paging=never'
+alias cat='batcat --theme=Dracula --paging=never --color=always'
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
@@ -141,3 +141,4 @@ alias y='yazi'
 
 eval "$(thefuck --alias)"
 
+alias fzf="fzf --preview 'batcat --theme=Dracula --paging=never --color=always {}'"
