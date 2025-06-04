@@ -134,6 +134,7 @@ eval "$(zoxide init bash)"
 
 # Alias for zoxide
 alias c='z'
+alias ci='zi'
 
 # Alias for Yazi (terminal file manager)
 alias y='yazi'
