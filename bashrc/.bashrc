@@ -1,69 +1,76 @@
-# bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-# for examples
+# ~/.bashrc: executed by bash(1) for non-login shells.
 
-# If not running interactively, don't do anything
+# Exit if not interactive shell
 case $- in
     *i*) ;;
       *) return;;
 esac
 
-# don't put duplicate lines or lines starting with space in the history.
-# See bash(1) for more options
+# Avoid duplicate entries and lines starting with a space in history
 HISTCONTROL=ignoreboth
 
-# append to the history file, don't overwrite it
+# Append to the history file instead of overwriting it
 shopt -s histappend
 
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+# Set history size limits
 HISTSIZE=1000
 HISTFILESIZE=2000
 
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
+# Automatically update terminal size
 shopt -s checkwinsize
 
-# If set, the pattern "**" used in a pathname expansion context will
-# match all files and zero or more directories and subdirectories.
-#shopt -s globstar
-
-# make less more friendly for non-text input files, see lesspipe(1)
+# Preprocess non-text files for 'less'
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# set variable identifying the chroot you work in (used in the prompt below)
+# Set chroot name (used in prompt if applicable)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
-# set a fancy prompt (non-color, unless we know we "want" color)
+# Enable color prompt if terminal supports it
 case "$TERM" in
     xterm-color|*-256color) color_prompt=yes;;
 esac
 
-# uncomment for a colored prompt, if the terminal has the capability; turned
-# off by default to not distract the user: the focus in a terminal window
-# should be on the output of commands, not on the prompt
-#force_color_prompt=yes
-
+# Check if tput works and force color prompt
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
+        color_prompt=yes
     else
-	color_prompt=
+        color_prompt=
     fi
 fi
 
+# Function: show incoming/outgoing git changes with icons
+git_sync_status() {
+  git rev-parse --is-inside-work-tree &>/dev/null || return
+
+  local status branch parts=()
+  status=$(git status -sb 2>/dev/null)
+  branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "(detached)")
+
+  parts+=("git:$branch")
+
+  [[ $status =~ behind\ ([0-9]+) ]] && parts+=("↓")
+  [[ $status =~ ahead\ ([0-9]+) ]] && parts+=("↑")
+
+  # Add ✱ if there are unstaged, staged, or untracked changes
+  if ! git diff --quiet --ignore-submodules -- || ! git diff --cached --quiet --ignore-submodules -- || [ -n "$(git ls-files --others --exclude-standard)" ]; then
+    parts+=("✱")
+  fi
+
+  printf " [%s]" "$(IFS=, ; echo "${parts[*]}")"
+}
+
+# Set custom PS1 prompt with colors, working dir, and git sync status
 if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    PS1='${debian_chroot:+($debian_chroot)}\[\e[1;35m\]\u\[\e[0m\] \[\e[1;32m\]\w\[\e[0m\]\[\e[1;34m\]$(git_sync_status)\[\e[0m\] \$ '
 else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+    PS1='\u \w$(git_sync_status) \$ '
 fi
 unset color_prompt force_color_prompt
 
-# If this is an xterm set the title to user@host:dir
+# Set terminal window title to user@host:dir (for xterm, rxvt)
 case "$TERM" in
 xterm*|rxvt*)
     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
@@ -72,42 +79,21 @@ xterm*|rxvt*)
     ;;
 esac
 
-# enable color support of ls and also add handy aliases
+# Enable colored output for common tools
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
-
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
 fi
 
-# colored GCC warnings and errors
-#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-
-# some more ls aliases
-# alias ll='ls -halF'
-# alias la='ls -hA'
-# alias l='ls -hCF'
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
-
+# Load extra aliases from ~/.bash_aliases if present
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
+# Enable programmable bash completion
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
     . /usr/share/bash-completion/bash_completion
@@ -116,31 +102,48 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# --- Custom configuration below ---
+
+# Alias: full system upgrade and cleanup
 alias aptup='sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y'
 
+# Add ~/.console-ninja/.bin to PATH
 PATH=~/.console-ninja/.bin:$PATH
 
+# PulseAudio for WSL or remote GUI apps
 export PULSE_SERVER=unix:/run/pulse/native
 export PULSE_LATENCY_MSEC=60
 
+# Apply Dracula theme to LS_COLORS using vivid
 eval "$(vivid generate dracula | sed 's/^/export LS_COLORS="/;s/$/"/')"
 
+# Aliases for eza (modern ls replacement) with icons and Git status
 alias ls='eza --icons=auto --git'
 alias l='eza -lh --icons=auto --sort=name --group-directories-first --git'
 alias ll='eza -lha --icons=auto --sort=name --group-directories-first --git'
 alias lt='eza -lhaT --icons=auto'
+
+# Replace cat with batcat (syntax highlighting, themes)
 alias cat='batcat --theme=Dracula --paging=never --color=always'
 
+# Enable fzf keybindings (Ctrl+R, etc.)
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
+# Initialize zoxide (smart directory jumping)
 eval "$(zoxide init bash)"
 
+# Alias for zoxide
 alias c='z'
 
+# Alias for Yazi (terminal file manager)
 alias y='yazi'
 
+# Enable thefuck (fix previous mistyped command)
 eval "$(thefuck --alias)"
 
+# Use fzf with file preview using batcat
 alias fzf="fzf --preview 'batcat --theme=Dracula --paging=never --color=always {}'"
 
+# Additional fzf keybindings (Ctrl+R, Ctrl+T, Alt+C)
 source /usr/share/doc/fzf/examples/key-bindings.bash
+
