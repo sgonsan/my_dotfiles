@@ -49,14 +49,14 @@ git_sync_status() {
   status=$(git status -sb 2>/dev/null)
   branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "(detached)")
 
-  parts+=("git:$branch")
+  parts+=("$branch")
 
   [[ $status =~ behind\ ([0-9]+) ]] && parts+=("↓")
   [[ $status =~ ahead\ ([0-9]+) ]] && parts+=("↑")
 
   # Add ✱ if there are unstaged, staged, or untracked changes
   if ! git diff --quiet --ignore-submodules -- || ! git diff --cached --quiet --ignore-submodules -- || [ -n "$(git ls-files --others --exclude-standard)" ]; then
-    parts+=("✱")
+    parts+=("*")
   fi
 
   printf " [%s]" "$(IFS=, ; echo "${parts[*]}")"
