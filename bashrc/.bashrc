@@ -110,10 +110,6 @@ alias aptup='sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove 
 # Add ~/.console-ninja/.bin to PATH
 PATH=~/.console-ninja/.bin:$PATH
 
-# PulseAudio for WSL or remote GUI apps
-export PULSE_SERVER=unix:/run/pulse/native
-export PULSE_LATENCY_MSEC=60
-
 # Apply Dracula theme to LS_COLORS using vivid
 eval "$(vivid generate dracula | sed 's/^/export LS_COLORS="/;s/$/"/')"
 
@@ -126,13 +122,8 @@ alias lt='eza -lhaT --icons=auto'
 # Replace cat with batcat (syntax highlighting, themes)
 alias cat='batcat --theme=Dracula --paging=never --color=always'
 
-# Enable fzf keybindings (Ctrl+R, etc.)
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
-# Initialize zoxide (smart directory jumping)
+# Initialize zoxide and aliases
 eval "$(zoxide init bash)"
-
-# Alias for zoxide
 alias c='z'
 alias ci='zi'
 
