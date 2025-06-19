@@ -130,6 +130,9 @@ alias ci='zi'
 # Alias for Yazi (terminal file manager)
 alias y='yazi'
 
+# Alias for fastfetch
+alias ff='fastfetch'
+
 # Enable thefuck (fix previous mistyped command)
 eval "$(thefuck --alias)"
 
