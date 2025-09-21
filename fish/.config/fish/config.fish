@@ -24,6 +24,7 @@ abbr mkdir 'mkdir -p'
 
 alias pacup='sudo pacman -Syyu'
 alias yayup='yay -Syyu'
+alias yayrm='yay -Yc'
 alias n='nvim'
 
 thefuck --alias | source
