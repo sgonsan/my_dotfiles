@@ -26,5 +26,6 @@ alias pacup='sudo pacman -Syyu'
 alias yayup='yay -Syyu'
 alias yayrm='yay -Yc'
 alias n='nvim'
+alias fast='fastfetch'
 
 thefuck --alias | source
