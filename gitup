@@ -1,0 +1,54 @@
+#!/usr/bin/env fish
+
+# Verificar que estamos en un repositorio Git
+git rev-parse --is-inside-work-tree >/dev/null 2>&1
+if test $status -ne 0
+    echo "❌ Error: No estás en un repositorio Git."
+    exit 1
+end
+
+# Mostrar la rama actual
+set branch (git rev-parse --abbrev-ref HEAD)
+echo "🌿 Rama actual: $branch"
+
+# Actualizar refs remotas
+echo "🔄 Comprobando estado del remoto..."
+git fetch >/dev/null 2>&1
+
+# Verificar si hay cambios remotos pendientes
+set local_commit (git rev-parse @)
+set remote_commit (git rev-parse "@{u}" ^/dev/null 2>/dev/null)
+set base_commit (git merge-base @ "@{u}" ^/dev/null 2>/dev/null)
+
+if test "$local_commit" = "$remote_commit"
+    echo "🟢 Local y remoto están sincronizados."
+else if test "$local_commit" = "$base_commit"
+    echo "⬇️  Hay cambios en remoto, haciendo pull..."
+    git pull --rebase
+else if test "$remote_commit" = "$base_commit"
+    echo "⬆️  Hay cambios locales, listos para subir."
+else
+    echo "⚠️ Tu rama y el remoto han divergido. Revisa manualmente (rebase/merge)."
+    exit 1
+end
+
+# Comprobar si hay cambios locales
+set diff_changed 0
+set staged_changed 0
+git diff --quiet; or set diff_changed 1
+git diff --cached --quiet; or set staged_changed 1
+
+if test "$diff_changed" = 1 -o "$staged_changed" = 1
+    read -P "Mensaje del commit (ENTER para 'update'): " commit_message
+    if test -z "$commit_message"
+        set commit_message "update"
+    end
+
+    git add -A
+    git commit -m "$commit_message"
+    git push
+    echo "✅ Cambios enviados correctamente."
+else
+    echo "ℹ️  No hay cambios locales que enviar."
+end
+
