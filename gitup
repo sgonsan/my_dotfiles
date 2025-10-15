@@ -11,25 +11,44 @@ end
 set branch (git rev-parse --abbrev-ref HEAD)
 echo "🌿 Rama actual: $branch"
 
-# Actualizar refs remotas
-echo "🔄 Comprobando estado del remoto..."
-git fetch >/dev/null 2>&1
-
-# Verificar si hay cambios remotos pendientes
-set local_commit (git rev-parse @)
-set remote_commit (git rev-parse "@{u}" ^/dev/null 2>/dev/null)
-set base_commit (git merge-base @ "@{u}" ^/dev/null 2>/dev/null)
-
-if test "$local_commit" = "$remote_commit"
-    echo "🟢 Local y remoto están sincronizados."
-else if test "$local_commit" = "$base_commit"
-    echo "⬇️  Hay cambios en remoto, haciendo pull..."
-    git pull --rebase
-else if test "$remote_commit" = "$base_commit"
-    echo "⬆️  Hay cambios locales, listos para subir."
+# Comprobar si hay upstream configurado
+if not git rev-parse --abbrev-ref "@{u}" >/dev/null 2>&1
+    echo "⚙️  No hay remoto configurado. Solo se harán commits locales."
+    set has_remote 0
 else
-    echo "⚠️ Tu rama y el remoto han divergido. Revisa manualmente (rebase/merge)."
-    exit 1
+    set has_remote 1
+end
+
+# Actualizar refs remotas (si hay)
+if test $has_remote -eq 1
+    echo "🔄 Comprobando estado del remoto..."
+    git fetch >/dev/null 2>&1
+end
+
+# Obtener commits si hay remoto
+if test $has_remote -eq 1
+    set local_commit (git rev-parse @)
+    set remote_commit (git rev-parse "@{u}" 2>/dev/null)
+    set base_commit (git merge-base @ "@{u}" 2>/dev/null)
+
+    if test -z "$remote_commit"
+        echo "⚙️  No se pudo obtener información remota. Revisa la conexión."
+    else if test "$local_commit" = "$remote_commit"
+        echo "🟢 Local y remoto están sincronizados."
+    else if test "$local_commit" = "$base_commit"
+        echo "⬇️  Hay cambios en remoto, haciendo pull..."
+        git pull --rebase
+    else if test "$remote_commit" = "$base_commit"
+        echo "⬆️  Hay cambios locales, listos para subir."
+    else
+        echo "⚠️  Tu rama y el remoto han divergido. Revisa manualmente (rebase/merge)."
+        echo ""
+        echo "Último commit local:"
+        git log -1 --oneline @
+        echo "Último commit remoto:"
+        git log -1 --oneline "@{u}"
+        exit 1
+    end
 end
 
 # Comprobar si hay cambios locales
@@ -46,8 +65,13 @@ if test "$diff_changed" = 1 -o "$staged_changed" = 1
 
     git add -A
     git commit -m "$commit_message"
-    git push
-    echo "✅ Cambios enviados correctamente."
+
+    if test $has_remote -eq 1
+        git push
+        echo "✅ Cambios enviados correctamente."
+    else
+        echo "✅ Commit local realizado (sin remoto configurado)."
+    end
 else
     echo "ℹ️  No hay cambios locales que enviar."
 end
