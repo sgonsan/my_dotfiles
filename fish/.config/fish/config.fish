@@ -42,7 +42,8 @@ fish_config theme choose "Dracula"
 # -------------------- Handy aliases --------------------
 alias pacup='sudo pacman -Syyu'
 alias yayup='yay -Syyu --noconfirm'
-alias yayrm='yay -Scc --noconfirm ; yay -Yc --noconfirm'
+alias yayrm='yay -Scc --noconfirm; yay -Yc --noconfirm; sudo paccache -r -k1; sudo pacman -D --asdeps $(pacman -Qdtq 2>/dev/null) || true; sudo reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist'
+alias yaykey='sudo pacman-key --init; sudo pacman-key --populate archlinux endeavouros; sudo pacman-key --refresh-keys'
 alias n='nvim'
 alias fast='fastfetch'
 alias diff='difft'
